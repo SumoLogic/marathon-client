@@ -22,6 +22,7 @@ import akka.actor.ActorSystem
 import akka.util.Timeout
 import com.sumologic.marathon.client.model.MarathonJsonProtocol._
 import com.sumologic.marathon.client.model._
+import org.parboiled.common.StringUtils
 import spray.http._
 import spray.httpx.SprayJsonSupport._
 
@@ -36,7 +37,8 @@ class Apps private[client] (client: RestClient)
   }
 
   // List all running applications.
-  def list(params: Uri.Query = Uri.Query.Empty, headers: List[HttpHeader] = List.empty): Future[AppList] = {
+  def list(cmd: String = "", embed: String = "none", headers: List[HttpHeader] = List.empty): Future[AppList] = {
+    val params = Uri.Query("cmd" -> cmd, "embed" -> embed)
     client.get[AppList](Marathon.Paths.Apps, params, headers)
   }
 
@@ -61,7 +63,8 @@ class Apps private[client] (client: RestClient)
   // Change parameters of a running application with `appId`. The new application parameters
   // apply only to subsequently created tasks. Currently running tasks are
   // restarted, while maintaining the `minimumHealthCapacity`.
-  def updateApp(appId: String, appUpdate: App, params: Uri.Query =  Uri.Query.Empty, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
+  def updateApp(appId: String, appUpdate: App, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
+    val params = Uri.Query("force" -> force.toString)
     val relativePath = Marathon.Paths.Apps / appId
     client.put[App, GeneralResponse](relativePath, appUpdate, params, headers)
   }
