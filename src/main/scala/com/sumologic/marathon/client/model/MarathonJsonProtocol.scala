@@ -27,6 +27,7 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   // task formats
   implicit val taskFormat = jsonFormat8(Task)
   implicit val taskListFormat = jsonFormat1(TaskList)
+  implicit val taskKillListFormat = jsonFormat1(TaskKillList)
 
   // format for empty request or response
   implicit val emptyFormat = jsonFormat0(Empty)

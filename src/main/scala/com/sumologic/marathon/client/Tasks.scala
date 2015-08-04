@@ -20,25 +20,24 @@ package com.sumologic.marathon.client
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import com.sumologic.marathon.client.model.MarathonJsonProtocol._
+import com.sumologic.marathon.client.model.{Empty, TaskKillList, TaskList}
 import spray.http._
+import spray.httpx.SprayJsonSupport._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Marathon client using spray.io http client.
- * Requires an actor system to be running.
- */
-class Marathon(client: RestClient)
-              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+class Tasks private[client] (client: RestClient)
+           (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
 
-  val tasks = new Tasks(client)
+  // List all running tasks.
+  def list(params: Uri.Query, headers: List[HttpHeader] = List.empty): Future[TaskList] = {
+    client.get[TaskList](Marathon.Paths.Tasks, params, headers)
+  }
 
-}
-
-private[client] object Marathon {
-  val ApiVersion = Uri.Path("v2")
-
-  object Paths {
-    val Tasks = ApiVersion / "tasks"
+  // Kill given list of tasks.
+  def kill(tasks: TaskList, params: Uri.Query, headers: List[HttpHeader] = List.empty): Future[Empty] = {
+    val killList = TaskKillList(tasks.tasks.map(_.id).array)
+    client.post[TaskKillList, Empty](Marathon.Paths.Tasks, killList, params, headers)
   }
 }
