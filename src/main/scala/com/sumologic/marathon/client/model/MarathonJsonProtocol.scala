@@ -24,6 +24,10 @@ import spray.json.DefaultJsonProtocol
  * Spray json format for marathon model classes.
  */
 object MarathonJsonProtocol extends DefaultJsonProtocol {
+  // task formats
   implicit val taskFormat = jsonFormat8(Task)
   implicit val taskListFormat = jsonFormat1(TaskList)
+
+  // format for empty request or response
+  implicit val emptyFormat = jsonFormat0(Empty)
 }

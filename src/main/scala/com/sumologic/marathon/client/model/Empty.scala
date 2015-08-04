@@ -16,27 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sumologic.marathon.client
+package com.sumologic.marathon.client.model
 
-import akka.actor.ActorSystem
-import akka.util.Timeout
-import com.sumologic.marathon.client.model.TaskList
-import spray.http._
-
-import scala.concurrent.{ExecutionContext, Future}
-
-/**
- * Marathon client using spray.io http client.
- * Requires an actor system to be running.
- */
-class Marathon(client: RestClient)
-              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
-
-  import com.sumologic.marathon.client.model.MarathonJsonProtocol._
-  import spray.httpx.SprayJsonSupport._
-
-  def tasks: Future[TaskList] = {
-    client.get[TaskList](Uri.Path("/v2/tasks"), headers = List(HttpHeaders.Accept(MediaTypes.`application/json`)))
-  }
-
-}
+case class Empty()
