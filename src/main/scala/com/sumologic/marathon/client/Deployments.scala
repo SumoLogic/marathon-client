@@ -20,30 +20,24 @@ package com.sumologic.marathon.client
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import com.sumologic.marathon.client.model.MarathonJsonProtocol._
+import com.sumologic.marathon.client.model._
 import spray.http._
+import spray.httpx.SprayJsonSupport._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Marathon client using spray.io http client.
- * Requires an actor system to be running.
- */
-class Marathon(client: RestClient)
-              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+class Deployments private[client] (client: RestClient)
+                                  (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+  // List all running deployments.
+  def list(headers: List[HttpHeader] = List.empty): Future[Deployment] = {
+    client.get[Deployment](Marathon.Paths.Deployments, headers = headers)
+  }
 
-  val apps = new Apps(client)
-  val deployments = new Deployments(client)
-  val groups = new Groups(client)
-  val tasks = new Tasks(client)
-}
-
-private[client] object Marathon {
-  val ApiVersion = Uri.Path("v2")
-
-  object Paths {
-    val Apps        = ApiVersion / "apps"
-    val Deployments = ApiVersion / "deployments"
-    val Groups      = ApiVersion / "groups"
-    val Tasks       = ApiVersion / "tasks"
+  // Delete deployment with `depId`.
+  def delete(depId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
+    val relativePath = Marathon.Paths.Deployments / depId
+    val params = Uri.Query("force" -> force.toString)
+    client.delete[GeneralResponse](relativePath, params, headers)
   }
 }

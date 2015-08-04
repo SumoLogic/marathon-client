@@ -41,6 +41,10 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   implicit val singleAppFormat = jsonFormat1(SingleApp)
   implicit val versionListFormat = jsonFormat1(VersionList)
 
+  // deployment formats
+  implicit val deploymentActionFormat = jsonFormat2(DeploymentAction)
+  implicit val deploymentFormat = jsonFormat4(Deployment)
+
   // group formats
   implicit val groupFormat: RootJsonFormat[Group] = rootFormat(lazyFormat(jsonFormat5(Group)))
   implicit val versionFormat = jsonFormat1(Version)
