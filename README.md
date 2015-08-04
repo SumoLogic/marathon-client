@@ -15,9 +15,13 @@ Very early work on a [Marathon](https://mesosphere.github.io/marathon/) API clie
 implicit val timeout: Timeout = 5.seconds
 implicit val system = ActorSystem("simple-example")
 import system.dispatcher
+
+val auth = new BasicHttpCredentials("username", "password")
+val baseUri = Uri("www.domain.com") withPort 8080
+val marathon = new Marathon(baseUri, auth)
+
 try {
-  val marathon = new Marathon(Uri("http://yourmarathon"))
-  println(s"${Await.result(marathon.tasks, Duration.Inf).tasks.mkString("\n")}")
+  println(s"${Await.result(marathon.tasks.list(), Duration.Inf).tasks.mkString("\n")}")
 } catch {
   case e: Exception => e.printStackTrace()
 } finally {
