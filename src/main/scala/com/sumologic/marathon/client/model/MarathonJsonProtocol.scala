@@ -52,6 +52,10 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   implicit val stepFormat = jsonFormat1(Step)
   implicit val stepListFormat = jsonFormat1(StepList)
 
+  // queue formats
+  implicit val delayFormat = jsonFormat2(Delay)
+  implicit val queueFormat = jsonFormat3(Queue)
+  implicit val queueListFormat = jsonFormat1(QueueList)
 
   // task formats
   implicit val taskFormat = jsonFormat8(Task)

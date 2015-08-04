@@ -20,32 +20,24 @@ package com.sumologic.marathon.client
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import com.sumologic.marathon.client.model.MarathonJsonProtocol._
+import com.sumologic.marathon.client.model._
 import spray.http._
+import spray.httpx.SprayJsonSupport._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Marathon client using spray.io http client.
- * Requires an actor system to be running.
- */
-class Marathon(client: RestClient)
-              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+class Queues private[client] (client: RestClient)
+                             (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+  // Show content of the task queue.
+  def show(headers: List[HttpHeader] = List.empty): Future[QueueList] = {
+    client.get[QueueList](Marathon.Paths.Queues, headers = headers)
+  }
 
-  val apps = new Apps(client)
-  val deployments = new Deployments(client)
-  val groups = new Groups(client)
-  val queues = new Queues(client)
-  val tasks = new Tasks(client)
-}
-
-private[client] object Marathon {
-  val ApiVersion = Uri.Path("v2")
-
-  object Paths {
-    val Apps        = ApiVersion / "apps"
-    val Deployments = ApiVersion / "deployments"
-    val Groups      = ApiVersion / "groups"
-    val Queues      = ApiVersion / "queue"
-    val Tasks       = ApiVersion / "tasks"
+  // The application specific task launch delay can be reset by calling this
+  // endpoint with `appId`.
+  def resetDelay(appId: String, headers: List[HttpHeader] = List.empty): Future[Empty] = {
+    val relativePath = Marathon.Paths.Queues / appId / "delay"
+    client.delete[Empty](relativePath, headers = headers)
   }
 }
