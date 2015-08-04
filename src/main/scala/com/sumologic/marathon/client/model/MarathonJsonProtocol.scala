@@ -57,6 +57,15 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   implicit val queueFormat = jsonFormat3(Queue)
   implicit val queueListFormat = jsonFormat1(QueueList)
 
+  // server info formats
+  implicit val httpConfigFormat = jsonFormat3(HttpConfig)
+  implicit val eventSubscriberFormat = jsonFormat2(EventSubscriber)
+  implicit val marathonConfigFormat = jsonFormat13(MarathonConfig)
+  implicit val zookeeperConfigFormat = jsonFormat4(ZookeeperConfig)
+  implicit val servierInfoFormat = jsonFormat8(ServerInfo)
+  implicit val leaderFormat = jsonFormat1(Leader)
+  implicit val messageFormat = jsonFormat1(Message)
+
   // task formats
   implicit val taskFormat = jsonFormat8(Task)
   implicit val taskListFormat = jsonFormat1(TaskList)

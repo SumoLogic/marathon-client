@@ -35,6 +35,7 @@ class Marathon(client: RestClient)
   val deployments = new Deployments(client)
   val groups = new Groups(client)
   val queues = new Queues(client)
+  val serverInfo = new ServerInfo(client)
   val tasks = new Tasks(client)
 }
 
@@ -45,6 +46,8 @@ private[client] object Marathon {
     val Apps        = ApiVersion / "apps"
     val Deployments = ApiVersion / "deployments"
     val Groups      = ApiVersion / "groups"
+    val Info        = ApiVersion / "info"
+    val Leader      = ApiVersion / "leader"
     val Queues      = ApiVersion / "queue"
     val Tasks       = ApiVersion / "tasks"
   }
