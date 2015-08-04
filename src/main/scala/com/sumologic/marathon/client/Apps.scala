@@ -20,12 +20,12 @@ package com.sumologic.marathon.client
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import com.sumologic.marathon.client.model.MarathonJsonProtocol._
+import com.sumologic.marathon.client.model._
 import spray.http._
 import spray.httpx.SprayJsonSupport._
-import com.sumologic.marathon.client.model._
-import com.sumologic.marathon.client.model.MarathonJsonProtocol._
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 class Apps private[client] (client: RestClient)
           (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
@@ -61,24 +61,24 @@ class Apps private[client] (client: RestClient)
   // Change parameters of a running application with `appId`. The new application parameters
   // apply only to subsequently created tasks. Currently running tasks are
   // restarted, while maintaining the `minimumHealthCapacity`.
-  def updateApp(appId: String, appUpdate: App, params: Uri.Query =  Uri.Query.Empty, headers: List[HttpHeader] = List.empty): Future[AppResponse] = {
+  def updateApp(appId: String, appUpdate: App, params: Uri.Query =  Uri.Query.Empty, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Apps / appId
-    client.put[App, AppResponse](relativePath, appUpdate, params, headers)
+    client.put[App, GeneralResponse](relativePath, appUpdate, params, headers)
   }
 
   // Initiates a rolling restart of all running tasks of the given `appId`. This
   // call respects the configured `minimumHealthCapacity`.
-  def restart(appId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[AppResponse] = {
+  def restart(appId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Apps / appId / "restart"
     val params = Uri.Query("force" -> force.toString)
-    client.post[Empty, AppResponse](relativePath, Empty(), params, headers)
+    client.post[Empty, GeneralResponse](relativePath, Empty(), params, headers)
   }
 
   // Destroy an application with `appId`. All data about that application will
   // be deleted.
-  def delete(appId: String, headers: List[HttpHeader] = List.empty): Future[AppResponse] = {
+  def delete(appId: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Apps / appId
-    client.delete[AppResponse](relativePath, headers = headers)
+    client.delete[GeneralResponse](relativePath, headers = headers)
   }
 
   // List all running tasks for application `appId`.

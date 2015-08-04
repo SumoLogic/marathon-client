@@ -18,16 +18,14 @@
  */
 package com.sumologic.marathon.client.model
 
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 /**
  * Spray json format for marathon model classes.
  */
 object MarathonJsonProtocol extends DefaultJsonProtocol {
-  // task formats
-  implicit val taskFormat = jsonFormat8(Task)
-  implicit val taskListFormat = jsonFormat1(TaskList)
-  implicit val taskKillListFormat = jsonFormat1(TaskKillList)
+  // misc formats
+  implicit val generalResponseFormat = jsonFormat2(GeneralResponse)
 
   // app formats
   implicit val upgradeStrategyFormat = jsonFormat2(UpgradeStrategy)
@@ -42,7 +40,19 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   implicit val appListFormat = jsonFormat1(AppList)
   implicit val singleAppFormat = jsonFormat1(SingleApp)
   implicit val versionListFormat = jsonFormat1(VersionList)
-  implicit val appResponseFormat = jsonFormat2(AppResponse)
+
+  // group formats
+  implicit val groupFormat: RootJsonFormat[Group] = rootFormat(lazyFormat(jsonFormat5(Group)))
+  implicit val versionFormat = jsonFormat1(Version)
+  implicit val actionFormat = jsonFormat2(Action)
+  implicit val stepFormat = jsonFormat1(Step)
+  implicit val stepListFormat = jsonFormat1(StepList)
+
+
+  // task formats
+  implicit val taskFormat = jsonFormat8(Task)
+  implicit val taskListFormat = jsonFormat1(TaskList)
+  implicit val taskKillListFormat = jsonFormat1(TaskKillList)
 
   // format for empty request or response
   implicit val emptyFormat = jsonFormat0(Empty)

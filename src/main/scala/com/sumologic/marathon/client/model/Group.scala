@@ -16,32 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sumologic.marathon.client
+package com.sumologic.marathon.client.model
 
-import akka.actor.ActorSystem
-import akka.util.Timeout
-import spray.http._
+case class Group(id: String,
+                 version: String,
+                 apps: Seq[App],
+                 dependencies: Seq[String],
+                 groups: Seq[Group])
 
-import scala.concurrent.ExecutionContext
+case class Version(version: String)
 
-/**
- * Marathon client using spray.io http client.
- * Requires an actor system to be running.
- */
-class Marathon(client: RestClient)
-              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+case class StepList(steps: Seq[Step])
 
-  val apps = new Apps(client)
-  val groups = new Groups(client)
-  val tasks = new Tasks(client)
-}
+case class Step(actions: Seq[Action])
 
-private[client] object Marathon {
-  val ApiVersion = Uri.Path("v2")
-
-  object Paths {
-    val Apps    = ApiVersion / "apps"
-    val Groups  = ApiVersion / "groups"
-    val Tasks   = ApiVersion / "tasks"
-  }
-}
+case class Action(app: String, `type`: String)

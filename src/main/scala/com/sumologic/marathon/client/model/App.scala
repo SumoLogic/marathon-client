@@ -74,4 +74,4 @@ case class UpgradeStrategy(minimumHealthCapacity: Float, maximumOverCapacity: Fl
 
 case class VersionList(versions: Seq[String])
 
-case class AppResponse(deploymentId: String, version: String)
+case class GeneralResponse(deploymentId: String, version: String)
