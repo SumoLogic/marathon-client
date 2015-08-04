@@ -33,13 +33,13 @@ class Tasks private[client] (client: RestClient)
   // List all running tasks.
   def list(status: String = "none", headers: List[HttpHeader] = List.empty): Future[TaskList] = {
     val params = Uri.Query("status" -> status)
-    client.get[TaskList](Marathon.Paths.Tasks, params, headers)
+    client.get[TaskList](Marathon.Paths.Tasks, headers, params)
   }
 
   // Kill given list of tasks.
   def kill(tasks: TaskList, scale: Boolean = false, headers: List[HttpHeader] = List.empty): Future[Empty] = {
     val killList = Map("ids" -> tasks.tasks.map(_.id).array)
     val params = Uri.Query("scale" -> scale.toString)
-    client.post[Map[String, Array[String]], Empty](Marathon.Paths.Tasks, killList, params, headers)
+    client.post[Map[String, Array[String]], Empty](Marathon.Paths.Tasks, headers, killList, params)
   }
 }

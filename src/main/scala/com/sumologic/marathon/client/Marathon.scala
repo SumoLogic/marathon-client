@@ -28,8 +28,10 @@ import scala.concurrent.ExecutionContext
  * Marathon client using spray.io http client.
  * Requires an actor system to be running.
  */
-class Marathon(client: RestClient)
+class Marathon(baseUri: Uri, auth: BasicHttpCredentials, defaultHeaders: Set[HttpHeader] = Set(MediaTypes.`application/json`))
               (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+
+  private val client = new RestClient(baseUri, auth, defaultHeaders)
 
   val apps = new Apps(client)
   val deployments = new Deployments(client)

@@ -33,31 +33,31 @@ class Apps private[client] (client: RestClient)
 
   // Create and start a new application.
   def create(app: App, headers: List[HttpHeader] = List.empty): Future[App] = {
-    client.post[App, App](Marathon.Paths.Apps, app, headers = headers)
+    client.post[App, App](Marathon.Paths.Apps, headers, app)
   }
 
   // List all running applications.
   def list(cmd: String = "", embed: String = "none", headers: List[HttpHeader] = List.empty): Future[AppList] = {
     val params = Uri.Query("cmd" -> cmd, "embed" -> embed)
-    client.get[AppList](Marathon.Paths.Apps, params, headers)
+    client.get[AppList](Marathon.Paths.Apps, headers, params)
   }
 
   // List the application with id `appId`.
   def app(appId: String, headers: List[HttpHeader] = List.empty): Future[SingleApp] = {
     val relativePath = Marathon.Paths.Apps / appId
-    client.get[SingleApp](relativePath, headers = headers)
+    client.get[SingleApp](relativePath, headers)
   }
 
   // List the versions of the application with id `appId`.
   def getAppVersion(appId: String, headers: List[HttpHeader] = List.empty): Future[VersionList] = {
     val relativePath = Marathon.Paths.Apps / appId / "versions"
-    client.get[VersionList](relativePath, headers = headers)
+    client.get[VersionList](relativePath, headers)
   }
 
   //List the configuration of the application with id `appId` at version `version`.
   def appConfiguration(appId: String, version: String, headers: List[HttpHeader] = List.empty): Future[App] = {
     val relativePath = Marathon.Paths.Apps/ appId / "versions" / version
-    client.get[App](relativePath, headers = headers)
+    client.get[App](relativePath, headers)
   }
 
   // Change parameters of a running application with `appId`. The new application parameters
@@ -66,7 +66,7 @@ class Apps private[client] (client: RestClient)
   def updateApp(appId: String, appUpdate: App, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val params = Uri.Query("force" -> force.toString)
     val relativePath = Marathon.Paths.Apps / appId
-    client.put[App, GeneralResponse](relativePath, appUpdate, params, headers)
+    client.put[App, GeneralResponse](relativePath, headers, appUpdate, params)
   }
 
   // Initiates a rolling restart of all running tasks of the given `appId`. This
@@ -74,33 +74,33 @@ class Apps private[client] (client: RestClient)
   def restart(appId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Apps / appId / "restart"
     val params = Uri.Query("force" -> force.toString)
-    client.post[Empty, GeneralResponse](relativePath, Empty(), params, headers)
+    client.post[Empty, GeneralResponse](relativePath, headers, Empty(), params)
   }
 
   // Destroy an application with `appId`. All data about that application will
   // be deleted.
   def delete(appId: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Apps / appId
-    client.delete[GeneralResponse](relativePath, headers = headers)
+    client.delete[GeneralResponse](relativePath, headers)
   }
 
   // List all running tasks for application `appId`.
   def appTasks(appId: String, headers: List[HttpHeader] = List.empty): Future[TaskList] = {
     val relativePath = Marathon.Paths.Apps / appId / "tasks"
-    client.get[TaskList](relativePath, headers = headers)
+    client.get[TaskList](relativePath, headers)
   }
 
   // Kill tasks that belong to the application `appId`.
   def killAppTasks(appId: String, host: String = "none", scale: Boolean = false, headers: List[HttpHeader] = List.empty): Future[TaskList] = {
     val relativePath = Marathon.Paths.Apps / appId / "tasks"
     val params = Uri.Query("host" -> host, "scale" -> scale.toString)
-    client.delete[TaskList](relativePath, params, headers)
+    client.delete[TaskList](relativePath, headers, params)
   }
 
   // Kill the task with ID `taskId` that belongs to the application `appId`.
   def killAppTask(appId: String, taskId: String, scale: Boolean = false, headers: List[HttpHeader] = List.empty): Future[TaskList] = {
     val relativePath = Marathon.Paths.Apps / appId / "tasks" / taskId
     val params = Uri.Query("scale" -> scale.toString)
-    client.delete[TaskList](relativePath, params, headers)
+    client.delete[TaskList](relativePath, headers, params)
   }
 }

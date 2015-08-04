@@ -33,20 +33,23 @@ import spray.httpx.unmarshalling.Unmarshaller._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RestClient(baseUri: Uri)
+class RestClient private[client] (baseUri: Uri, auth: BasicHttpCredentials, defaultHeaders: Set[HttpHeader])
                 (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
+
+  private val requestHeaders = (defaultHeaders + auth.basicAuthorization)
 
   private def http[Rqst,Rspns](method: HttpMethod,
                                relativePath: Uri.Path,
                                entity: Rqst,
                                params: Uri.Query = Uri.Query.Empty,
-                               headers: List[HttpHeader] = List.empty)
+                               headers: List[HttpHeader])
                               (implicit um: Unmarshaller[Rspns], m: Marshaller[Rqst]): Future[Rspns] = {
 
     marshal(entity) match {
       case Right(value) => {
         val uri = baseUri withPath relativePath withQuery params
-        IO(Http).ask(HttpRequest(method, uri, headers = headers, entity = value)).mapTo[HttpResponse].flatMap { response =>
+        val h = requestHeaders ++ headers.toSet
+        IO(Http).ask(HttpRequest(method, uri, headers = h.toList, entity = value)).mapTo[HttpResponse].flatMap { response =>
           unmarshal[Rspns](response.entity) match {
             case Right(value) => Future.successful(value)
             case Left(error) => Future.failed(new IllegalStateException(error.toString))
@@ -57,22 +60,22 @@ class RestClient(baseUri: Uri)
     }
   }
 
-  def get[R](relativePath: Uri.Path, params: Uri.Query = Uri.Query.Empty, headers: List[HttpHeader] = List.empty)
+  def get[R](relativePath: Uri.Path, headers: List[HttpHeader], params: Uri.Query = Uri.Query.Empty)
             (implicit m: Marshaller[Empty], um: Unmarshaller[R]): Future[R] = {
     http[Empty, R](GET, relativePath, Empty(), params, headers)
   }
 
-  def delete[R](relativePath: Uri.Path, params: Uri.Query = Uri.Query.Empty, headers: List[HttpHeader] = List.empty)
+  def delete[R](relativePath: Uri.Path, headers: List[HttpHeader], params: Uri.Query = Uri.Query.Empty)
                (implicit m: Marshaller[Empty], um: Unmarshaller[R]): Future[R] = {
     http[Empty, R](DELETE, relativePath, Empty(), params, headers)
   }
 
-  def post[Rqst, Rspsn](relativePath: Uri.Path, entity: Rqst, params: Uri.Query = Uri.Query.Empty, headers: List[HttpHeader] = List.empty)
+  def post[Rqst, Rspsn](relativePath: Uri.Path, headers: List[HttpHeader], entity: Rqst, params: Uri.Query = Uri.Query.Empty)
                        (implicit m: Marshaller[Rqst], um: Unmarshaller[Rspsn]): Future[Rspsn] = {
     http[Rqst, Rspsn](POST, relativePath, entity, params, headers)
   }
 
-  def put[Rqst, Rspsn](relativePath: Uri.Path, entity: Rqst, params: Uri.Query = Uri.Query.Empty, headers: List[HttpHeader] = List.empty)
+  def put[Rqst, Rspsn](relativePath: Uri.Path, headers: List[HttpHeader], entity: Rqst, params: Uri.Query = Uri.Query.Empty)
                       (implicit m: Marshaller[Rqst], um: Unmarshaller[Rspsn]): Future[Rspsn] = {
     http[Rqst, Rspsn](PUT, relativePath, entity, params, headers)
   }

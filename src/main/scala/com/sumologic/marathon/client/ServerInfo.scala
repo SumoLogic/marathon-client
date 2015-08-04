@@ -31,16 +31,16 @@ class ServerInfo private[client] (client: RestClient)
                                  (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
   // Get info about the Marathon Instance.
   def get(headers: List[HttpHeader] = List.empty): Future[model.ServerInfo] = {
-    client.get[model.ServerInfo](Marathon.Paths.Info, headers = headers)
+    client.get[model.ServerInfo](Marathon.Paths.Info, headers)
   }
 
   // Returns the current leader.
   def leader(headers: List[HttpHeader] = List.empty): Future[Leader] = {
-    client.get[Leader](Marathon.Paths.Leader, headers = headers)
+    client.get[Leader](Marathon.Paths.Leader, headers)
   }
 
   // Causes the current leader to abdicate, triggering a new election.
   def releaseLeader(headers: List[HttpHeader] = List.empty): Future[Message] = {
-    client.delete[Message](Marathon.Paths.Leader, headers = headers)
+    client.delete[Message](Marathon.Paths.Leader, headers)
   }
 }

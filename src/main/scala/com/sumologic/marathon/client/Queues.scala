@@ -31,13 +31,13 @@ class Queues private[client] (client: RestClient)
                              (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
   // Show content of the task queue.
   def show(headers: List[HttpHeader] = List.empty): Future[QueueList] = {
-    client.get[QueueList](Marathon.Paths.Queues, headers = headers)
+    client.get[QueueList](Marathon.Paths.Queues, headers)
   }
 
   // The application specific task launch delay can be reset by calling this
   // endpoint with `appId`.
   def resetDelay(appId: String, headers: List[HttpHeader] = List.empty): Future[Empty] = {
     val relativePath = Marathon.Paths.Queues / appId / "delay"
-    client.delete[Empty](relativePath, headers = headers)
+    client.delete[Empty](relativePath, headers)
   }
 }

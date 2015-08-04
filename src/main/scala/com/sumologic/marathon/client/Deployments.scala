@@ -31,13 +31,13 @@ class Deployments private[client] (client: RestClient)
                                   (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
   // List all running deployments.
   def list(headers: List[HttpHeader] = List.empty): Future[Deployment] = {
-    client.get[Deployment](Marathon.Paths.Deployments, headers = headers)
+    client.get[Deployment](Marathon.Paths.Deployments, headers)
   }
 
   // Delete deployment with `depId`.
   def delete(depId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Deployments / depId
     val params = Uri.Query("force" -> force.toString)
-    client.delete[GeneralResponse](relativePath, params, headers)
+    client.delete[GeneralResponse](relativePath, headers, params)
   }
 }

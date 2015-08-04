@@ -51,34 +51,34 @@ class Groups private[client] (client: RestClient)
    * `group_change_failed` event with the given version.
    */
   def create(group: Group, headers: List[HttpHeader] = List.empty): Future[Version] = {
-    client.post[Group, Version](Marathon.Paths.Groups, group, headers = headers)
+    client.post[Group, Version](Marathon.Paths.Groups, headers, group)
   }
 
   // Change parameters of a deployed application group of `groupId`.
   def update(groupId: String, group: Group, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Groups / groupId
-    client.post[Group, GeneralResponse](relativePath, group, headers = headers)
+    client.post[Group, GeneralResponse](relativePath, headers, group)
   }
 
   // Scale a group by `groupId`.
   def scale(scaleBy: Float, groupId: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Groups / groupId
     val ent = Map("scaleBy" -> scaleBy)
-    client.put[Map[String, Float], GeneralResponse](relativePath, ent, headers = headers)
+    client.put[Map[String, Float], GeneralResponse](relativePath, headers, ent)
   }
 
   // Rollback a group.
   def rollback(groupId: String, version: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
     val relativePath = Marathon.Paths.Groups / groupId
     val ent = Map("version" -> version)
-    client.put[Map[String, String], GeneralResponse](relativePath, ent, headers = headers)
+    client.put[Map[String, String], GeneralResponse](relativePath, headers, ent)
   }
 
   // Deployment dry run.
   def dryRun(group: Group, headers: List[HttpHeader] = List.empty): Future[StepList] = {
     val relativePath = Marathon.Paths.Groups / group.id
     val params = Uri.Query("dryRun" -> true.toString)
-    client.put[Group, StepList](relativePath, group, params, headers)
+    client.put[Group, StepList](relativePath, headers, group, params)
   }
 
   // Destroy a group by `groupId`. All data about that group and all
