@@ -30,15 +30,16 @@ import scala.concurrent.ExecutionContext
  */
 class Marathon(client: RestClient)
               (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
-
+  
+  val apps = new Apps(client)
   val tasks = new Tasks(client)
-
 }
 
 private[client] object Marathon {
   val ApiVersion = Uri.Path("v2")
 
   object Paths {
-    val Tasks = ApiVersion / "tasks"
+    val Apps    = ApiVersion / "apps"
+    val Tasks   = ApiVersion / "tasks"
   }
 }
