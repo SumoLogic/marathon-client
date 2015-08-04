@@ -30,5 +30,3 @@ case class Task(appId: String,
   lazy val servicePortMapping: Map[Int, Int] = ports.zip(servicePorts).toMap}
 
 case class TaskList(tasks: Array[Task])
-
-case class TaskKillList(ids: Array[String])
