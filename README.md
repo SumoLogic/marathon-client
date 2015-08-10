@@ -18,7 +18,7 @@ import system.dispatcher
 
 val auth = new BasicHttpCredentials("username", "password")
 val baseUri = Uri("www.domain.com") withPort 8080
-val marathon = new Marathon(baseUri, auth)
+val marathon = new Marathon(baseUri, Some(auth))
 
 try {
   println(s"${Await.result(marathon.tasks.list(), Duration.Inf).tasks.mkString("\n")}")

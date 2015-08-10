@@ -33,10 +33,15 @@ import spray.httpx.unmarshalling.Unmarshaller._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RestClient private[client] (baseUri: Uri, auth: BasicHttpCredentials, defaultHeaders: Set[HttpHeader])
+class RestClient private[client] (baseUri: Uri, auth: Option[BasicHttpCredentials], defaultHeaders: Set[HttpHeader])
                 (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
 
-  private val requestHeaders = (defaultHeaders + auth.basicAuthorization)
+  private val basicAuth: Set[HttpHeader] = auth match {
+    case Some(a) => Set(a.basicAuthorization)
+    case None => Set.empty
+  }
+
+  private val requestHeaders = (defaultHeaders ++ basicAuth)
 
   private def http[Rqst,Rspns](method: HttpMethod,
                                relativePath: Uri.Path,
