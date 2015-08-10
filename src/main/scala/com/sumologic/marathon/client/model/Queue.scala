@@ -18,15 +18,8 @@
  */
 package com.sumologic.marathon.client.model
 
-case class Task(appId: String,
-                id: String,
-                host: String,
-                ports: IndexedSeq[Int],
-                stagedAt: String,
-                startedAt: String,
-                version: String,
-                servicePorts:
-                IndexedSeq[Int]) {
-  lazy val servicePortMapping: Map[Int, Int] = ports.zip(servicePorts).toMap}
+case class QueueList(queue: Seq[Queue])
 
-case class TaskList(tasks: Array[Task])
+case class Queue(count: Int, delay: Delay, app: App)
+
+case class Delay(overdue: Boolean, timeLeftSeconds: Int)

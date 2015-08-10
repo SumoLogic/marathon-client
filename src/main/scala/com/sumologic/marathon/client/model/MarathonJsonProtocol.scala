@@ -18,12 +18,58 @@
  */
 package com.sumologic.marathon.client.model
 
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 /**
  * Spray json format for marathon model classes.
  */
 object MarathonJsonProtocol extends DefaultJsonProtocol {
+  // misc formats
+  implicit val generalResponseFormat = jsonFormat2(GeneralResponse)
+
+  // app formats
+  implicit val upgradeStrategyFormat = jsonFormat2(UpgradeStrategy)
+  implicit val commandFormat = jsonFormat1(Command)
+  implicit val healthCheckFormat = jsonFormat8(HealthCheck)
+  implicit val volumeFormat = jsonFormat3(Volume)
+  implicit val parameterFormat = jsonFormat2(Parameter)
+  implicit val portFormat = jsonFormat4(Port)
+  implicit val dockerFormat = jsonFormat5(Docker)
+  implicit val containerFormat = jsonFormat3(Container)
+  implicit val appFormat = jsonFormat21(App)
+  implicit val appListFormat = jsonFormat1(AppList)
+  implicit val singleAppFormat = jsonFormat1(SingleApp)
+  implicit val versionListFormat = jsonFormat1(VersionList)
+
+  // deployment formats
+  implicit val deploymentActionFormat = jsonFormat2(DeploymentAction)
+  implicit val deploymentFormat = jsonFormat4(Deployment)
+
+  // group formats
+  implicit val groupFormat: RootJsonFormat[Group] = rootFormat(lazyFormat(jsonFormat5(Group)))
+  implicit val versionFormat = jsonFormat1(Version)
+  implicit val actionFormat = jsonFormat2(Action)
+  implicit val stepFormat = jsonFormat1(Step)
+  implicit val stepListFormat = jsonFormat1(StepList)
+
+  // queue formats
+  implicit val delayFormat = jsonFormat2(Delay)
+  implicit val queueFormat = jsonFormat3(Queue)
+  implicit val queueListFormat = jsonFormat1(QueueList)
+
+  // server info formats
+  implicit val httpConfigFormat = jsonFormat3(HttpConfig)
+  implicit val eventSubscriberFormat = jsonFormat2(EventSubscriber)
+  implicit val marathonConfigFormat = jsonFormat13(MarathonConfig)
+  implicit val zookeeperConfigFormat = jsonFormat4(ZookeeperConfig)
+  implicit val servierInfoFormat = jsonFormat8(ServerInfo)
+  implicit val leaderFormat = jsonFormat1(Leader)
+  implicit val messageFormat = jsonFormat1(Message)
+
+  // task formats
   implicit val taskFormat = jsonFormat8(Task)
   implicit val taskListFormat = jsonFormat1(TaskList)
+
+  // format for empty request or response
+  implicit val emptyFormat = jsonFormat0(Empty)
 }

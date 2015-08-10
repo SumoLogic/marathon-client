@@ -16,17 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.sumologic.marathon.client.model
+package com.sumologic.marathon.client
 
-case class Task(appId: String,
-                id: String,
-                host: String,
-                ports: IndexedSeq[Int],
-                stagedAt: String,
-                startedAt: String,
-                version: String,
-                servicePorts:
-                IndexedSeq[Int]) {
-  lazy val servicePortMapping: Map[Int, Int] = ports.zip(servicePorts).toMap}
+import spray.http._
 
-case class TaskList(tasks: Array[Task])
+class BasicHttpCredentials(user: String, pass: String) {
+  def password: String = pass
+  def username: String = user
+
+  def basicAuthorization: HttpHeader = {
+    HttpHeaders.Authorization(BasicHttpCredentials(username, password))
+  }
+}

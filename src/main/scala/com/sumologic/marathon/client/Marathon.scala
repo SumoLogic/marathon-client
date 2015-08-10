@@ -19,40 +19,38 @@
 package com.sumologic.marathon.client
 
 import akka.actor.ActorSystem
-import akka.io.IO
-import akka.pattern.ask
 import akka.util.Timeout
-import com.sumologic.marathon.client.model.TaskList
-import spray.can.Http
-import spray.http.HttpMethods._
 import spray.http._
-import spray.httpx.unmarshalling.Unmarshaller._
-import spray.httpx.unmarshalling._
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 /**
  * Marathon client using spray.io http client.
  * Requires an actor system to be running.
  */
-class Marathon(baseUrl: Uri)
+class Marathon(baseUri: Uri, auth: Option[BasicHttpCredentials] = None, defaultHeaders: Set[HttpHeader] = Set(MediaTypes.`application/json`))
               (implicit val system: ActorSystem, implicit val executor: ExecutionContext, implicit val timeout: Timeout) {
 
-  import com.sumologic.marathon.client.model.MarathonJsonProtocol._
-  import spray.httpx.SprayJsonSupport._
+  private val client = new RestClient(baseUri, auth, defaultHeaders)
 
-  def tasks: Future[TaskList] = {
-    get[TaskList]("/v2/tasks", List(HttpHeaders.Accept(MediaTypes.`application/json`)))
+  val apps = new Apps(client)
+  val deployments = new Deployments(client)
+  val groups = new Groups(client)
+  val queues = new Queues(client)
+  val serverInfo = new ServerInfo(client)
+  val tasks = new Tasks(client)
+}
+
+private[client] object Marathon {
+  val ApiVersion = Uri.Path("v2")
+
+  object Paths {
+    val Apps        = ApiVersion / "apps"
+    val Deployments = ApiVersion / "deployments"
+    val Groups      = ApiVersion / "groups"
+    val Info        = ApiVersion / "info"
+    val Leader      = ApiVersion / "leader"
+    val Queues      = ApiVersion / "queue"
+    val Tasks       = ApiVersion / "tasks"
   }
-
-  private def get[T](relativePath: String, headers: List[HttpHeader] = List.empty)(implicit um: Unmarshaller[T]): Future[T] = {
-    IO(Http).ask(HttpRequest(GET, baseUrl.copy(path = baseUrl.path + relativePath), headers = headers)).mapTo[HttpResponse].flatMap { response =>
-      unmarshal[T](response.entity) match {
-        case Right(value) => Future.successful(value)
-        case Left(error) => Future.failed(new IllegalStateException(error.toString))
-      }
-    }
-  }
-
 }
