@@ -52,7 +52,7 @@ class RestClient private[client] (baseUri: Uri, auth: Option[BasicHttpCredential
 
     marshal(entity) match {
       case Right(value) => {
-        val uri = baseUri withPath relativePath withQuery params
+        val uri = baseUri withPath baseUri.path ++ relativePath withQuery params
         val h = requestHeaders ++ headers.toSet
         IO(Http).ask(HttpRequest(method, uri, headers = h.toList, entity = value)).mapTo[HttpResponse].flatMap { response =>
           unmarshal[Rspns](response.entity) match {
