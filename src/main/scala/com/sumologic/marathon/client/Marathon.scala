@@ -42,7 +42,7 @@ class Marathon(baseUri: Uri, auth: Option[BasicHttpCredentials] = None, defaultH
 }
 
 private[client] object Marathon {
-  val ApiVersion = Uri.Path("v2")
+  val ApiVersion = Uri.Path("/v2")
 
   object Paths {
     val Apps        = ApiVersion / "apps"
