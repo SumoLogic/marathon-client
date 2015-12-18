@@ -36,7 +36,7 @@ class Groups private[client] (client: RestClient)
 
   // List the group with the specified `groupId`.
   def listGroup(groupId: String, headers: List[HttpHeader] = List.empty): Future[Group] = {
-    val relativePath = Marathon.Paths.Groups / groupId
+    val relativePath = Marathon.Paths.Groups + groupId
     client.get[Group](relativePath, headers = headers)
   }
 
@@ -56,27 +56,27 @@ class Groups private[client] (client: RestClient)
 
   // Change parameters of a deployed application group of `groupId`.
   def update(groupId: String, group: Group, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
-    val relativePath = Marathon.Paths.Groups / groupId
+    val relativePath = Marathon.Paths.Groups + groupId
     client.post[Group, GeneralResponse](relativePath, headers, group)
   }
 
   // Scale a group by `groupId`.
   def scale(scaleBy: Float, groupId: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
-    val relativePath = Marathon.Paths.Groups / groupId
+    val relativePath = Marathon.Paths.Groups + groupId
     val ent = Map("scaleBy" -> scaleBy)
     client.put[Map[String, Float], GeneralResponse](relativePath, headers, ent)
   }
 
   // Rollback a group.
   def rollback(groupId: String, version: String, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
-    val relativePath = Marathon.Paths.Groups / groupId
+    val relativePath = Marathon.Paths.Groups + groupId
     val ent = Map("version" -> version)
     client.put[Map[String, String], GeneralResponse](relativePath, headers, ent)
   }
 
   // Deployment dry run.
   def dryRun(group: Group, headers: List[HttpHeader] = List.empty): Future[StepList] = {
-    val relativePath = Marathon.Paths.Groups / group.id
+    val relativePath = Marathon.Paths.Groups + group.id
     val params = Uri.Query("dryRun" -> true.toString)
     client.put[Group, StepList](relativePath, headers, group, params)
   }
@@ -84,7 +84,7 @@ class Groups private[client] (client: RestClient)
   // Destroy a group by `groupId`. All data about that group and all
   // associated applications will be deleted.
   def delete(groupId: String, headers: List[HttpHeader] = List.empty): Future[Version] = {
-    val relativePath = Marathon.Paths.Groups / groupId
+    val relativePath = Marathon.Paths.Groups + groupId
     client.delete[Version](relativePath, headers = headers)
   }
 }
