@@ -36,7 +36,7 @@ class Deployments private[client] (client: RestClient)
 
   // Delete deployment with `depId`.
   def delete(depId: String, force: Boolean = false, headers: List[HttpHeader] = List.empty): Future[GeneralResponse] = {
-    val relativePath = Marathon.Paths.Deployments / depId
+    val relativePath = Marathon.Paths.Deployments + depId
     val params = Uri.Query("force" -> force.toString)
     client.delete[GeneralResponse](relativePath, headers, params)
   }
