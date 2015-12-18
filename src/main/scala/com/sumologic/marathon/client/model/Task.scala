@@ -25,8 +25,7 @@ case class Task(appId: String,
                 stagedAt: String,
                 startedAt: String,
                 version: String,
-                servicePorts:
-                IndexedSeq[Int]) {
-  lazy val servicePortMapping: Map[Int, Int] = ports.zip(servicePorts).toMap}
+                servicePorts: IndexedSeq[Int]) {
+  def servicePortMapping: Map[Int, Int] = ports.zip(servicePorts).toMap}
 
 case class TaskList(tasks: Array[Task])

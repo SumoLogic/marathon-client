@@ -37,7 +37,7 @@ class Queues private[client] (client: RestClient)
   // The application specific task launch delay can be reset by calling this
   // endpoint with `appId`.
   def resetDelay(appId: String, headers: List[HttpHeader] = List.empty): Future[Empty] = {
-    val relativePath = Marathon.Paths.Queues / appId / "delay"
+    val relativePath = (Marathon.Paths.Queues + appId) / "delay"
     client.delete[Empty](relativePath, headers)
   }
 }

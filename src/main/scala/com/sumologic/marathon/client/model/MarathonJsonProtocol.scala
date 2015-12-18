@@ -36,7 +36,7 @@ object MarathonJsonProtocol extends DefaultJsonProtocol {
   implicit val portFormat = jsonFormat4(Port)
   implicit val dockerFormat = jsonFormat5(Docker)
   implicit val containerFormat = jsonFormat3(Container)
-  implicit val appFormat = jsonFormat21(App)
+  implicit val appFormat = jsonFormat22(App)
   implicit val appListFormat = jsonFormat1(AppList)
   implicit val singleAppFormat = jsonFormat1(SingleApp)
   implicit val versionListFormat = jsonFormat1(VersionList)
